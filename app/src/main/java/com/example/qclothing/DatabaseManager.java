@@ -706,7 +706,7 @@ public class DatabaseManager {
                         "Jacket 1",
                         "Warm Jacket",
                         750.000,
-                        "https://m.media-amazon.com/images/I/51JQOeN1W1L._AC_UY1000_.jpg",
+                        "https://media3.coolmate.me/cdn-cgi/image/quality=80,format=auto/uploads/December2024/ao-phao-day-ultrawarm-puffer-den_(11).jpg",
                         "Áo khoác",
                         "JACKET1"
                 ));
@@ -726,10 +726,220 @@ public class DatabaseManager {
                         "Leather Gloves",
                         "Fine leather gloves",
                         250.000,
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMiHnK_-lh5JDJqpGtcwRjmWfH7xaWnxO4-A&s",
+                        "https://m.media-amazon.com/images/I/81aXMbFFkpL._SX679_.jpg",
                         "Phụ kiện",
                         "GLOVES1"
                 ));
+
+                addClothingItem(new ClothingItem(
+                        "Winter Jacket",
+                        "Warm and stylish winter jacket",
+                        1200.000,
+                        "https://cdn.vuahanghieu.com/unsafe/0x900/left/top/smart/filters:quality(90)/https://admin.vuahanghieu.com/upload/product/2023/02/ao-khoac-adidas-essentials-midweight-down-hooded-jacket-men-s-primegreen-gt9133-mau-xanh-navy-size-l-63db218f23a3e-02022023093559.jpg",
+                        "Áo khoác",
+                        "JACKET2"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Denim Jeans",
+                        "Classic blue denim jeans",
+                        600.000,
+                        "https://carolina.net.au/cdn/shop/products/Katya-Jeans-Blue-Denim.png?v=1678674857",
+                        "Quần",
+                        "JEANS3"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Baseball Cap",
+                        "Adjustable cotton baseball cap",
+                        300.000,
+                        "https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/19401b59f0ff487699dfae76012d9e7b_9366/TREFOIL_BASEBALL_CAP_Beige_HL9326_01_standard.jpg",
+                        "Phụ kiện",
+                        "CAP1"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Leather Belt",
+                        "Premium leather belt",
+                        400.000,
+                        "https://assets.manufactum.de/p/086/086105/86105_01.jpg/grease-leather-belt-nature.jpg?profile=pdsmain_150",
+                        "Phụ kiện",
+                        "BELT1"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Scarf",
+                        "Warm and stylish wool scarf",
+                        450.000,
+                        "https://m.media-amazon.com/images/I/51GgzLM2EIL._AC_SY1000_.jpg",
+                        "Phụ kiện",
+                        "SCARF1"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Cargo Pants",
+                        "Durable and stylish cargo pants",
+                        750.000,
+                        "https://product.hstatic.net/200000162957/product/technical_cargo_nylon_3_656dbca996b3487a9a38095376c51377_master.jpeg",
+                        "Quần",
+                        "CARGOPANTS1"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Maxi Dress",
+                        "Elegant floral maxi dress",
+                        900.000,
+                        "https://bizweb.dktcdn.net/thumb/large/100/488/552/products/brand-xita-3d-mau-18-2.jpg?v=1690263864997",
+                        "Váy",
+                        "1"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Blazer",
+                        "Elegant and stylish blazer for formal occasions",
+                        1500.000,
+                        "https://m.media-amazon.com/images/I/51InVIt3OIL._AC_SL1001_.jpg",
+                        "Áo khoác",
+                        "BLAZER1"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Pencil Skirt",
+                        "Chic and professional pencil skirt",
+                        800.000,
+                        "https://hobb.vn/public/media/2021/pre_fall_2021_trinh_huong/3d_shop_online/d5.jpg",
+                        "Váy",
+                        "PENCILSKIRT1"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Wool Coat",
+                        "Long wool coat for winter warmth",
+                        2000.000,
+                        "https://images-na.ssl-images-amazon.com/images/I/51D1-sLQp4L.jpg",
+                        "Áo khoác",
+                        "WOOLCOAT1"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Beret Hat",
+                        "Trendy beret hat for a fashionable look",
+                        350.000,
+                        "https://m.media-amazon.com/images/I/51aX-6ZwhxL._AC_SX569_.jpg",
+                        "Phụ kiện",
+                        "BERET1"
+                ));
+
+
+                // 6 Áo
+                addClothingItem(new ClothingItem(
+                        "Polo Shirt",
+                        "Classic polo shirt with breathable fabric",
+                        450.000,
+                        "https://www.mrporter.com/variants/images/1647597313248155/in/w2000_q60.jpg",
+                        "Áo",
+                        "TSHIRT10"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "V-Neck Sweater",
+                        "Elegant V-neck sweater for casual and formal occasions",
+                        650.000,
+                        "https://content.woolovers.com/img/747x856/c4f32-17211_l2m_charcoal_m_5.jpg",
+                        "Áo",
+                        "SWEATER11"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Oversized Hoodie",
+                        "Trendy oversized hoodie for ultimate comfort",
+                        700.000,
+                        "https://underarmour.scene7.com/is/image/Underarmour/V5-1387779-001_FC?rp=standard-0pad|pdpMainDesktop&scl=1&fmt=jpg&qlt=85&resMode=sharp2&cache=on,on&bgc=F0F0F0&wid=566&hei=708&size=566,708",
+                        "Áo",
+                        "HOODIE12"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Silk Blouse",
+                        "Luxurious silk blouse with a smooth texture",
+                        820.000,
+                        "https://sixdo.vn/images/products/2024/original/dsc01482-copy-1730962180.jpg",
+                        "Áo",
+                        "BLOUSE13"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Graphic T-Shirt",
+                        "Trendy graphic t-shirt with modern prints",
+                        380.000,
+                        "https://threadheads.com/cdn/shop/files/Black-TeeFront.jpg?v=1733315433&width=2000",
+                        "Áo",
+                        "TSHIRT14"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Sleeveless Tank Top",
+                        "Breathable sleeveless tank top for summer days",
+                        320.000,
+                        "https://cdn.boo.vn/media/catalog/product/1/_/1.2.02.1.02.002.224.23.10200011_2__3.jpg",
+                        "Áo",
+                        "TANKTOP15"
+                ));
+
+// 2 Váy
+                addClothingItem(new ClothingItem(
+                        "Chiffon Dress",
+                        "Light and airy chiffon dress perfect for summer",
+                        900.000,
+                        "https://sixdo.vn/images/products/2023/original/_VQV9389%20copy.jpg",
+                        "Váy",
+                        "DRESS16"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "A-Line Skirt",
+                        "Classic A-line skirt that flatters any body type",
+                        780.000,
+                        "https://www.sans-sans.com.my/wp-content/uploads/3095-PERIDOT-SKIRT-1.jpg",
+                        "Váy",
+                        "SKIRT17"
+                ));
+
+// 3 Quần
+                addClothingItem(new ClothingItem(
+                        "Slim Fit Jeans",
+                        "Modern slim-fit jeans for a sleek look",
+                        680.000,
+                        "https://product.hstatic.net/200000325151/product/xucqn-jean-slim-fit-4_472c3f0ac7ea4248b4e9892783114695.png",
+                        "Quần",
+                        "JEANS18"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Wide-Leg Pants",
+                        "Chic wide-leg pants for an effortless fashion statement",
+                        890.000,
+                        "https://d32xbmzryof2yc.cloudfront.net/sites/files/6style/images/products/202406/800xAUTO/24.jpg",
+                        "Quần",
+                        "PANTS19"
+                ));
+
+                addClothingItem(new ClothingItem(
+                        "Culottes",
+                        "Comfortable and stylish culottes for daily wear",
+                        750.000,
+                        "https://shop.mango.com/assets/rcs/pics/static/T7/fotos/S/77042913_99.jpg?imwidth=2048&imdensity=1&ts=1714149620089",
+                        "Quần",
+                        "CULOTTES20"
+                ));
+
+
+
+
+
+
+
+
 
                 Log.d(TAG, "Sample data initialization complete");
             }
