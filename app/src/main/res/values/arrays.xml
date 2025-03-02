@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="clothing_categories_array">
+        <item>Danh mục</item>
+        <item>Áo</item>
+        <item>Quần</item>
+        <item>Váy</item>
+        <item>Áo khoác</item>
+        <item>Phụ kiện</item>
+    </string-array>
+
+    <string-array name="sort_options">
+        <item>@string/sort_default</item>
+        <item>@string/sort_price_low_to_high</item>
+        <item>@string/sort_price_high_to_low</item>
+        <item>@string/sort_name_a_to_z</item>
+        <item>@string/sort_name_z_to_a</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "121066034772",
+    "project_id": "qclothing-b7208",
+    "storage_bucket": "qclothing-b7208.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121066034772:android:e49f1f7d9aafe538097fc1",
+        "android_client_info": {
+          "package_name": "com.example.qclothing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZIQX3fzi4Vbyjdusm1xqioerl5EEBlcg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

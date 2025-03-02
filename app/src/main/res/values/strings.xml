@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">  <!-- ADD this xmlns:xliff attribute to the <resources> tag -->
+    <string name="app_name">QClothing</string>
+
+    <!-- General UI Strings -->
+    <string name="shopping_cart">Giỏ hàng</string>
+    <string name="total_price">Tổng giá tiền:</string>
+    <string name="checkout">Thanh toán</string>
+    <string name="confirm_order">Xác nhận thanh toán</string>
+    <string name="order_summary">Sản phẩm đã chọn</string>
+    <string name="login">Đăng nhập</string>
+    <string name="signup">Đăng ký</string>
+    <string name="email_or_phone">Email hoặc SĐT</string>
+    <string name="password">Mật khẩu</string>
+    <string name="name">Tên</string>
+    <string name="confirm_password">Nhập lại mật khẩu</string>
+    <string name="add_to_cart">Thêm vào giỏ</string>
+    <string name="remove">Xóa hết</string>
+    <string name="remove_item">Xóa sp</string>
+    <string name="edit_item">Chỉnh sửa sp</string>
+    <string name="add_item">Thêm sp</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="save_changes">Lưu thay đổi</string>
+    <string name="add_new_item">Thêm sp mới</string>
+
+    <!-- Shopping Fragment Strings -->
+    <string name="select_category">Select Category</string>
+    <string name="search_hint">Quần áo cần tìm</string>
+    <string name="sort_by">Sort By</string>
+
+    <!-- Item Description Activity Strings -->
+    <!-- (No specific strings in layout beyond general ones) -->
+
+    <!-- Admin Portal Strings -->
+    <string name="item_name">Tên sản pẩm</string>
+    <string name="item_description">Mô tả</string>
+    <string name="price">Giá</string>
+    <string name="image_url">Image URL</string>
+    <string name="select_item_to_edit">Chọn sp để chỉnh sửa</string>
+    <string name="select_item_to_remove">Chọn sp để xóa</string>
+
+    <!-- Bottom Navigation Menu Strings -->
+    <string name="menu_add_item">Thêm vào giỏ</string>
+    <string name="menu_edit_item">Edit Item</string>
+    <string name="menu_remove_item">Bỏ tất cả</string>
+
+    <string name="login_signup">Đăng nhập/Đăng ký</string>
+
+    <string name="action_cart">Giỏ hàng</string>
+    <string name="action_login_signup">Đăng nhập/Đăng ký</string>
+
+    <!-- Category Spinner Options -->
+    <string name="category_all_categories">Danh mục</string>
+    <string name="category_tops">Áo</string>
+    <string name="category_bottoms">Quần</string>
+    <string name="category_dresses">Váy</string>
+    <string name="category_outerwear">Áo khoác</string>
+    <string name="category_accessories">Phụ kiện</string>
+
+    <!-- Sort Spinner Options Array (res/values/arrays.xml - create this file) -->
+    <string name="sort_default">Sắp xếp theo</string>
+    <string name="sort_price_low_to_high">Giá: Thấp đến Cao</string>
+    <string name="sort_price_high_to_low">Giá: Cao xuống Thấp</string>
+    <string name="sort_name_a_to_z">Theo tên: A-Z</string>
+    <string name="sort_name_z_to_a">Theo tên: Z-A</string>
+
+    <!-- Currency Symbol and Format -->
+    <string name="currency_symbol">.000 VND</string>  <!-- ADDED: Currency Symbol set to VND -->
+    <string name="currency_format_vnd" formatted="false">%1$,.0f<xliff:g id="currency_symbol">.000 VND</xliff:g></string>
+
+
+    <string name="app_logo">QClothing</string>
+</resources>
