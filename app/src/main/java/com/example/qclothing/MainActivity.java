@@ -25,11 +25,15 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseHelper databaseHelper;
     private DatabaseManager databaseManager;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize session manager
+        sessionManager = new SessionManager(this);
 
         // Initialize database
         initializeDatabase();
@@ -62,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
             // Initialize database with sample data if empty
             databaseManager.initDatabase();
 
+            // Ensure default users exist (admin and demo)
+            databaseManager.ensureDefaultUsersExist();
+
             // Load clothing items to static list for backward compatibility
             clothingItemList = databaseManager.getAllClothingItems();
 
@@ -80,7 +87,70 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        // Update menu items based on login status
+        MenuItem loginItem = menu.findItem(R.id.action_login_signup);
+        MenuItem logoutItem = menu.findItem(R.id.action_logout);
+
+        if (sessionManager.isLoggedIn()) {
+            // User is logged in, show logout option
+            loginItem.setVisible(false);
+            logoutItem.setVisible(true);
+
+            // Get current user and update title if needed
+            User currentUser = sessionManager.getUserDetails();
+            if (currentUser != null && getSupportActionBar() != null) {
+                getSupportActionBar().setTitle("QClothing - " + currentUser.getName());
+            }
+        } else {
+            // User is not logged in, show login option
+            loginItem.setVisible(true);
+            logoutItem.setVisible(false);
+
+            // Reset title
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle("QClothing");
+            }
+        }
+
         return true;
+    }
+
+    private void updateMenuItems(Menu menu) {
+        if (menu != null) {
+            MenuItem loginItem = menu.findItem(R.id.action_login_signup);
+            MenuItem logoutItem = menu.findItem(R.id.action_logout);
+
+            if (sessionManager.isLoggedIn()) {
+                // User is logged in, show logout option
+                if (loginItem != null) loginItem.setVisible(false);
+                if (logoutItem != null) logoutItem.setVisible(true);
+
+                // Get current user and update title if needed
+                User currentUser = sessionManager.getUserDetails();
+                if (currentUser != null && getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle("QClothing - " + currentUser.getName());
+                }
+            } else {
+                // User is not logged in, show login option
+                if (loginItem != null) loginItem.setVisible(true);
+                if (logoutItem != null) logoutItem.setVisible(false);
+
+                // Reset title
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle("QClothing");
+                }
+            }
+        }
+    }
+
+    // Update onResume to refresh menu when returning to activity
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Refresh the menu to reflect current login state
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -93,6 +163,14 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_login_signup) {
             Intent loginIntent = new Intent(this, LoginActivity.class);
             startActivity(loginIntent);
+            return true;
+        } else if (id == R.id.action_logout) {
+            // Log out the user
+            sessionManager.logoutUser();
+            Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+
+            // Refresh the menu
+            invalidateOptionsMenu();
             return true;
         }
         return super.onOptionsItemSelected(item);

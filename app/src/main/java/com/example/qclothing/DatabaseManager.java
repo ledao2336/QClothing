@@ -88,6 +88,73 @@ public class DatabaseManager {
     // ====== USER OPERATIONS ======
     
     // Add a new user
+
+
+    public void ensureDefaultUsersExist() {
+        try {
+            // Check for admin user
+            User adminUser = getUserByEmailOrPhone("admin@example.com");
+            if (adminUser == null) {
+                Log.d(TAG, "Admin user not found, creating...");
+                addUser("Admin", "admin@example.com", "", "adminpass", true);
+            } else {
+                Log.d(TAG, "Admin user exists with ID: " + adminUser.getId());
+            }
+
+            // Check for demo user
+            User demoUser = getUserByEmailOrPhone("user@example.com");
+            if (demoUser == null) {
+                Log.d(TAG, "Demo user not found, creating...");
+                addUser("Demo User", "user@example.com", "", "password", false);
+            } else {
+                Log.d(TAG, "Demo user exists with ID: " + demoUser.getId());
+            }
+
+            // List all users for verification
+            debugListAllUsers();
+        } catch (Exception e) {
+            Log.e(TAG, "Error ensuring default users exist: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Lists all users in the database (for debugging purposes)
+     */
+    public void debugListAllUsers() {
+        try {
+            Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_USERS, null);
+
+            Log.d(TAG, "Total users in database: " + cursor.getCount());
+
+            if (cursor.moveToFirst()) {
+                int idIndex = cursor.getColumnIndex(COLUMN_ID);
+                int nameIndex = cursor.getColumnIndex(COLUMN_USER_NAME);
+                int emailIndex = cursor.getColumnIndex(COLUMN_USER_EMAIL);
+                int phoneIndex = cursor.getColumnIndex(COLUMN_USER_PHONE);
+                int isAdminIndex = cursor.getColumnIndex(COLUMN_USER_IS_ADMIN);
+
+                do {
+                    StringBuilder userInfo = new StringBuilder("User: ");
+                    if (idIndex != -1) userInfo.append("ID=").append(cursor.getLong(idIndex));
+                    if (nameIndex != -1) userInfo.append(", Name=").append(cursor.getString(nameIndex));
+                    if (emailIndex != -1) userInfo.append(", Email=").append(cursor.getString(emailIndex));
+                    if (phoneIndex != -1) userInfo.append(", Phone=").append(cursor.getString(phoneIndex));
+                    if (isAdminIndex != -1) userInfo.append(", IsAdmin=").append(cursor.getInt(isAdminIndex));
+
+                    Log.d(TAG, userInfo.toString());
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Error listing users: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+
     public long addUser(String name, String email, String phone, String password, boolean isAdmin) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_NAME, name);

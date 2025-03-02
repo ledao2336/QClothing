@@ -4,9 +4,15 @@
     <item
         android:id="@+id/action_cart"
         android:icon="@drawable/ic_shopping_cart"
-    android:title="@string/shopping_cart"
-    app:showAsAction="always" />
+        android:title="@string/shopping_cart"
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_login_signup"
-        android:title="@string/login_signup" />
+        android:title="@string/login_signup"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_logout"
+        android:icon="@drawable/ic_logout"
+        android:title="@string/logout"
+        app:showAsAction="ifRoom" />
 </menu>
