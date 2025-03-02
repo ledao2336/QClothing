@@ -21,6 +21,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private final Context mContext;
     private boolean mNeedUpdate = false;
 
+    // New flag to control database initialization
+    private static final int FORCE_REINITIALIZE = 1; // Use 1 to force reinitialize, 0 to use assets
+
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, 1); // Database name, factory (null), version
         this.mContext = context;
@@ -35,14 +38,100 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Method to update or create database if needed
     public void updateDataBase() throws IOException {
-        if (mNeedUpdate) {
+        if (mNeedUpdate || FORCE_REINITIALIZE == 1) {
             File dbFile = new File(DB_PATH + DB_NAME);
             if (dbFile.exists()) {
                 dbFile.delete(); // Delete old database if exists
             }
-            copyDataBase(); // Copy new database from assets
+
+            if (FORCE_REINITIALIZE == 1) {
+                // If flag is 1, create a new database using initDatabase method
+                createEmptyDatabase();
+            } else {
+                // Otherwise, try to copy from assets
+                copyDataBase();
+            }
+
             mNeedUpdate = false;
         }
+    }
+
+    // Create an empty database that will be populated programmatically
+    private void createEmptyDatabase() throws IOException {
+        try {
+            SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME, null);
+
+            // Create tables manually when creating a new database
+            createTables(db);
+
+            db.close();
+            Log.d(TAG, "Empty database created successfully with tables");
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating empty database", e);
+            throw new IOException("Error creating empty database");
+        }
+    }
+
+    // Add a method to create tables that can be used both in initialization and upgrade
+    private void createTables(SQLiteDatabase db) {
+        try {
+            // Create users table
+            db.execSQL("CREATE TABLE IF NOT EXISTS users (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "name TEXT NOT NULL," +
+                    "email TEXT," +
+                    "phone TEXT," +
+                    "password TEXT NOT NULL," +
+                    "is_admin INTEGER DEFAULT 0)");
+
+            // Create clothing table
+            db.execSQL("CREATE TABLE IF NOT EXISTS quanao (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "itemId TEXT UNIQUE NOT NULL," +
+                    "name TEXT NOT NULL," +
+                    "description TEXT," +
+                    "price REAL NOT NULL," +
+                    "imageUrl TEXT," +
+                    "category TEXT)");
+
+            // Create cart table
+            db.execSQL("CREATE TABLE IF NOT EXISTS cart (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "user_id INTEGER NOT NULL," +
+                    "item_id TEXT NOT NULL," +
+                    "quantity INTEGER DEFAULT 1," +
+                    "FOREIGN KEY (user_id) REFERENCES users(id)," +
+                    "FOREIGN KEY (item_id) REFERENCES quanao(itemId))");
+
+            // Create orders table
+            db.execSQL("CREATE TABLE IF NOT EXISTS orders (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "user_id INTEGER NOT NULL," +
+                    "order_date INTEGER NOT NULL," +
+                    "total REAL NOT NULL," +
+                    "status TEXT DEFAULT 'pending'," +
+                    "FOREIGN KEY (user_id) REFERENCES users(id))");
+
+            // Create order_items table
+            db.execSQL("CREATE TABLE IF NOT EXISTS order_items (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "order_id INTEGER NOT NULL," +
+                    "item_id TEXT NOT NULL," +
+                    "quantity INTEGER DEFAULT 1," +
+                    "price REAL NOT NULL," +
+                    "FOREIGN KEY (order_id) REFERENCES orders(id)," +
+                    "FOREIGN KEY (item_id) REFERENCES quanao(itemId))");
+
+            Log.d(TAG, "Tables created successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating tables", e);
+        }
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // Call the method to create tables when the database is first created
+        createTables(db);
     }
 
     // Check if database needs to be updated
@@ -69,7 +158,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (IOException e) {
             Log.e(TAG, "Error copying database from assets", e);
 
-            // If there's no database in assets, create an empty one
+            // If there's no database in assets, create an empty database
             this.getReadableDatabase();
             Log.d(TAG, "Created empty database instead");
             throw e; // Re-throw to inform caller about the issue
@@ -83,7 +172,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d(TAG, "Database exists, checking version");
             int dbVersion = getVersionId(); // Check database version if needed
             int appDbVersion = 1; // Your app's database version
-            if (appDbVersion > dbVersion) { // Compare versions and update if app version is newer
+
+            // Force update if flag is set
+            if (FORCE_REINITIALIZE == 1 || appDbVersion > dbVersion) {
                 Log.d(TAG, "Database needs update, current version: " + dbVersion);
                 mNeedUpdate = true;
                 updateDataBase();
@@ -94,11 +185,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             this.getReadableDatabase(); // Create empty database in system folder
             close();
             try {
-                copyDataBase(); // Try to copy from assets
+                // If flag is 1, create an empty database to be initialized programmatically
+                if (FORCE_REINITIALIZE == 1) {
+                    createEmptyDatabase();
+                } else {
+                    // Otherwise, try to copy from assets
+                    copyDataBase();
+                }
             } catch (IOException e) {
-                Log.e(TAG, "Error copying database, will create tables manually", e);
-                // If copying fails, create tables manually
-                createTables();
+                Log.e(TAG, "Error copying/creating database", e);
             }
         }
     }
@@ -177,11 +272,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (mDataBase != null)
             mDataBase.close();
         super.close();
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        // Tables are created in createTables() method if needed
     }
 
     @Override
