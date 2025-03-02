@@ -15,16 +15,20 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
-import java.util.Locale; // Import Locale
+import java.util.Locale;
 
 public class ClothingItemAdapter extends RecyclerView.Adapter<ClothingItemAdapter.ClothingItemViewHolder> {
 
     private Context context;
     private List<ClothingItem> clothingItemList;
+    private DatabaseManager databaseManager;
+    private SessionManager sessionManager;
 
     public ClothingItemAdapter(Context context, List<ClothingItem> clothingItemList) {
         this.context = context;
         this.clothingItemList = clothingItemList;
+        this.databaseManager = new DatabaseManager(context);
+        this.sessionManager = new SessionManager(context);
     }
 
     @NonNull
@@ -39,30 +43,97 @@ public class ClothingItemAdapter extends RecyclerView.Adapter<ClothingItemAdapte
         ClothingItem clothingItem = clothingItemList.get(position);
         holder.itemNameTextView.setText(clothingItem.getName());
 
-        // --- SỬA ĐỔI ĐỂ SỬ DỤNG STRING RESOURCE currency_format_vnd ---
-        String formattedPrice = String.format(Locale.getDefault(), ContextCompat.getString(context, R.string.currency_format_vnd), clothingItem.getPrice(), ContextCompat.getString(context, R.string.currency_symbol));
+        // Format price
+        String formattedPrice = String.format(Locale.getDefault(), "%.3f VND", clothingItem.getPrice());
         holder.itemPriceTextView.setText(formattedPrice);
-        // --- END SỬA ĐỔI ---
 
-        // Load image using an image loading library like Glide or Picasso (omitted for brevity)
-        // Example (using placeholder): holder.itemImageView.setImageResource(R.drawable.placeholder_image);
+        // Load image (we'll use a placeholder for now)
+        // In a real app, you would use Glide or Picasso to load images
+        holder.itemImageView.setImageResource(R.drawable.ic_launcher_foreground);
 
+        // Set click listener for the whole item view
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ItemDescriptionActivity.class);
             intent.putExtra("CLOTHING_ITEM", clothingItem); // Pass the ClothingItem object
             context.startActivity(intent);
         });
 
+        // Set click listener for the Add to Cart button
         holder.addToCartButton.setOnClickListener(v -> {
-            // Add item to cart (using static cart in CartActivity for now)
-            CartActivity.cartItems.add(new CartItem(clothingItem, 1)); // Default quantity 1
-            Toast.makeText(context, clothingItem.getName() + " đã được thêm vào giỏ", Toast.LENGTH_SHORT).show();
+            addToCart(clothingItem);
         });
     }
 
     @Override
     public int getItemCount() {
         return clothingItemList.size();
+    }
+
+    // Add item to cart
+    private void addToCart(ClothingItem item) {
+        // Check if user is logged in
+        if (!sessionManager.isLoggedIn()) {
+            // Redirect to login
+            Intent loginIntent = new Intent(context, LoginActivity.class);
+            loginIntent.putExtra("REDIRECT_TO_CART", true);
+            context.startActivity(loginIntent);
+            return;
+        }
+
+        // Get current user
+        User currentUser = sessionManager.getUserDetails();
+
+        try {
+            // Open database connection
+            databaseManager.open();
+
+            // Add item to cart in database
+            long result = databaseManager.addToCart(currentUser.getId(), item.getItemId(), 1);
+
+            if (result > 0) {
+                // Add to static cart for backward compatibility
+                boolean itemExists = false;
+                for (CartItem cartItem : CartActivity.cartItems) {
+                    if (cartItem.getClothingItem().getItemId().equals(item.getItemId())) {
+                        cartItem.increaseQuantity();
+                        itemExists = true;
+                        break;
+                    }
+                }
+
+                if (!itemExists) {
+                    CartActivity.cartItems.add(new CartItem(item, 1));
+                }
+
+                Toast.makeText(context, item.getName() + " đã được thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Không thể thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(context, "Lỗi khi thêm vào giỏ hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+
+            // Fallback: add to static cart
+            boolean itemExists = false;
+            for (CartItem cartItem : CartActivity.cartItems) {
+                if (cartItem.getClothingItem().getItemId().equals(item.getItemId())) {
+                    cartItem.increaseQuantity();
+                    itemExists = true;
+                    break;
+                }
+            }
+
+            if (!itemExists) {
+                CartActivity.cartItems.add(new CartItem(item, 1));
+            }
+
+            Toast.makeText(context, item.getName() + " đã được thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+        } finally {
+            // Close database connection
+            if (databaseManager != null && databaseManager.isOpen()) {
+                databaseManager.close();
+            }
+        }
     }
 
     public static class ClothingItemViewHolder extends RecyclerView.ViewHolder {

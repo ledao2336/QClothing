@@ -1,6 +1,7 @@
-package com.example.qclothing; // ĐẢM BẢO PACKAGE DECLARATION LÀ ĐÚNG: com.example.qclothing.data
+package com.example.qclothing;
 
 import android.content.Context;
+import android.database.SQLException;  // Changed from java.sql.SQLException
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -10,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.SQLException;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 

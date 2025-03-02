@@ -4,16 +4,26 @@
     <item
         android:id="@+id/admin_add_item"
         android:icon="@drawable/ic_add"
-    android:title="@string/add_item" />
+        android:title="@string/add_item" />
 
     <item
         android:id="@+id/admin_edit_item"
         android:icon="@drawable/ic_edit"
-    android:title="@string/edit_item" />
+        android:title="@string/edit_item" />
 
     <item
         android:id="@+id/admin_remove_item"
         android:icon="@drawable/ic_remove"
-    android:title="@string/remove_item" />
+        android:title="@string/remove_item" />
+        
+    <item
+        android:id="@+id/admin_customer_lookup"
+        android:icon="@drawable/ic_person"
+        android:title="@string/customer_lookup" />
+        
+    <item
+        android:id="@+id/admin_orders"
+        android:icon="@drawable/ic_orders"
+        android:title="@string/orders" />
 
 </menu>

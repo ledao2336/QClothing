@@ -1,8 +1,5 @@
 package com.example.qclothing;
 
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,17 +19,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.qclothing.ClothingItemAdapter;
-import com.example.qclothing.DatabaseHelper; // Correct import for DatabaseHelper
-import com.example.qclothing.ClothingItem; // Correct import for ClothingItem
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections; // Correct import for Collections
-import java.util.Comparator;  // Correct import for Comparator
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ShoppingFragment extends Fragment {
+
+    private static final String TAG = "ShoppingFragment";
 
     private RecyclerView clothingRecyclerView;
     private ClothingItemAdapter clothingItemAdapter;
@@ -45,6 +39,7 @@ public class ShoppingFragment extends Fragment {
     private String currentCategoryFilter;
     private String currentSortOrder = "Mặc định";
 
+    private DatabaseManager databaseManager;
 
     @Nullable
     @Override
@@ -67,11 +62,14 @@ public class ShoppingFragment extends Fragment {
         setupSortSpinner();
         setupSearchBar();
 
-        fetchClothingItemsFromSQLite();
+        // Initialize database manager
+        databaseManager = new DatabaseManager(getContext());
+
+        // Fetch data from database
+        fetchClothingItemsFromDatabase();
 
         return view;
     }
-
 
     private void setupCategorySpinner() {
         ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(
@@ -96,58 +94,52 @@ public class ShoppingFragment extends Fragment {
         });
     }
 
+    private void fetchClothingItemsFromDatabase() {
+        try {
+            // Open database connection
+            databaseManager.open();
 
-    private void fetchClothingItemsFromSQLite() {
-        DatabaseHelper dbHelper = new DatabaseHelper(getContext());
-        SQLiteDatabase db = null;
-        try { // BẮT ĐẦU try block - BAO QUANH TOÀN BỘ CODE TỪ ĐÂY
-
-            dbHelper.prepareDataBase(); // Prepare database (copy if needed)
-            db = dbHelper.openDataBase(); // Open database - Code có thể throw SQLException
-
+            // Clear current lists
             clothingItemList.clear();
             originalClothingItemList.clear();
 
-            // --- Execute SQL Query to Fetch Clothing Items ---
-            String query = "SELECT itemId, name, description, price, imageUrl, category FROM quanao";
-            Cursor cursor = db.rawQuery(query, null);
-
-            if (cursor.moveToFirst()) {
-                do {
-                    ClothingItem item = new ClothingItem();
-                    item.setItemId(cursor.getString(cursor.getColumnIndexOrThrow("itemId")));
-                    item.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
-                    item.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
-                    item.setPrice(cursor.getDouble(cursor.getColumnIndexOrThrow("price")));
-                    item.setImageUrl(cursor.getString(cursor.getColumnIndexOrThrow("imageUrl")));
-                    item.setCategory(cursor.getString(cursor.getColumnIndexOrThrow("category")));
-                    clothingItemList.add(item);
-                    originalClothingItemList.add(item);
-                } while (cursor.moveToNext());
-            }
-            cursor.close(); // Close Cursor
+            // Get all clothing items from database
+            List<ClothingItem> items = databaseManager.getAllClothingItems();
+            
+            // Add items to our lists
+            clothingItemList.addAll(items);
+            originalClothingItemList.addAll(items);
+            
+            // Notify adapter that data has changed
+            clothingItemAdapter.notifyDataSetChanged();
+            
+            // Apply filters and sorting
+            applyFiltersAndSorting();
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error fetching clothing items from database", e);
+            Toast.makeText(getContext(), "Failed to load items from database", Toast.LENGTH_SHORT).show();
+            
+            // If database is empty, use mock data from MainActivity
+            clothingItemList.clear();
+            originalClothingItemList.clear();
+            clothingItemList.addAll(MainActivity.clothingItemList);
+            originalClothingItemList.addAll(MainActivity.clothingItemList);
             clothingItemAdapter.notifyDataSetChanged();
             applyFiltersAndSorting();
-
-        } catch (SQLException | IOException e) { // catch block - KHÔNG THAY ĐỔI
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Failed to load items from SQLite database.", Toast.LENGTH_SHORT).show();
-            Log.e("SQLite", "Error fetching clothing items from SQLite", e);
-        } finally { // finally block - KHÔNG THAY ĐỔI
-            if (db != null) {
-                db.close(); // Close database connection in finally block
+        } finally {
+            // Close database connection
+            if (databaseManager != null && databaseManager.isOpen()) {
+                databaseManager.close();
             }
-            dbHelper.close(); // Close DatabaseHelper
-        } // KẾT THÚC try-catch-finally block - BAO QUANH TOÀN BỘ CODE ĐẾN ĐÂY
+        }
     }
-
-
 
     private void applyFiltersAndSorting() {
         String searchText = searchBar.getText().toString().toLowerCase().trim();
         List<ClothingItem> filteredList = new ArrayList<>(originalClothingItemList);
 
-        // --- Apply Category Filter ---
+        // Apply Category Filter
         if (!currentCategoryFilter.equals(getString(R.string.category_all_categories))) {
             List<ClothingItem> categoryFilteredList = new ArrayList<>();
             for (ClothingItem item : originalClothingItemList) {
@@ -158,26 +150,25 @@ public class ShoppingFragment extends Fragment {
             filteredList = categoryFilteredList;
         }
 
-
-        // --- Apply Search Filter ---
+        // Apply Search Filter
         if (!searchText.isEmpty()) {
             List<ClothingItem> searchFilteredList = new ArrayList<>();
             for (ClothingItem item : filteredList) {
-                if (item.getName().toLowerCase().contains(searchText)) {
+                if (item.getName().toLowerCase().contains(searchText) || 
+                    (item.getDescription() != null && item.getDescription().toLowerCase().contains(searchText))) {
                     searchFilteredList.add(item);
                 }
             }
             filteredList = searchFilteredList;
         }
 
-        // --- Apply Sorting ---
+        // Apply Sorting
         sortClothingItems(filteredList, currentSortOrder);
 
         clothingItemList.clear();
         clothingItemList.addAll(filteredList);
         clothingItemAdapter.notifyDataSetChanged();
     }
-
 
     private void sortClothingItems(List<ClothingItem> listToSort, String sortOrder) {
         if (sortOrder.equals(getString(R.string.sort_price_low_to_high))) {
@@ -190,7 +181,6 @@ public class ShoppingFragment extends Fragment {
             Collections.sort(listToSort, (item1, item2) -> item2.getName().compareToIgnoreCase(item1.getName()));
         }
     }
-
 
     private void setupSortSpinner() {
         ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
@@ -226,5 +216,12 @@ public class ShoppingFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
             }
         });
+    }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh data when returning to fragment
+        fetchClothingItemsFromDatabase();
     }
 }
