@@ -50,7 +50,7 @@ public class ClothingItem implements Parcelable {
         return itemId;
     }
 
-    public void setItemId_temp1(String itemId) {
+    public void setItemId(String itemId) {
         this.itemId = itemId;
     }
 
