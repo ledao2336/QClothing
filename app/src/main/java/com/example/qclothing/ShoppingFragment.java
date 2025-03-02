@@ -105,22 +105,30 @@ public class ShoppingFragment extends Fragment {
 
             // Get all clothing items from database
             List<ClothingItem> items = databaseManager.getAllClothingItems();
-            
-            // Add items to our lists
-            clothingItemList.addAll(items);
-            originalClothingItemList.addAll(items);
-            
+
+            if (items != null && !items.isEmpty()) {
+                Log.d(TAG, "Loaded " + items.size() + " items from database");
+                // Add items to our lists
+                clothingItemList.addAll(items);
+                originalClothingItemList.addAll(items);
+            } else {
+                Log.d(TAG, "No items found in database, falling back to static list");
+                // If database returned no items, fall back to static list in MainActivity
+                clothingItemList.addAll(MainActivity.clothingItemList);
+                originalClothingItemList.addAll(MainActivity.clothingItemList);
+            }
+
             // Notify adapter that data has changed
             clothingItemAdapter.notifyDataSetChanged();
-            
+
             // Apply filters and sorting
             applyFiltersAndSorting();
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Error fetching clothing items from database", e);
             Toast.makeText(getContext(), "Failed to load items from database", Toast.LENGTH_SHORT).show();
-            
-            // If database is empty, use mock data from MainActivity
+
+            // If database access fails, use static list from MainActivity
             clothingItemList.clear();
             originalClothingItemList.clear();
             clothingItemList.addAll(MainActivity.clothingItemList);
@@ -143,7 +151,7 @@ public class ShoppingFragment extends Fragment {
         if (!currentCategoryFilter.equals(getString(R.string.category_all_categories))) {
             List<ClothingItem> categoryFilteredList = new ArrayList<>();
             for (ClothingItem item : originalClothingItemList) {
-                if (item.getCategory().equals(currentCategoryFilter)) {
+                if (item.getCategory() != null && item.getCategory().equals(currentCategoryFilter)) {
                     categoryFilteredList.add(item);
                 }
             }
@@ -154,8 +162,8 @@ public class ShoppingFragment extends Fragment {
         if (!searchText.isEmpty()) {
             List<ClothingItem> searchFilteredList = new ArrayList<>();
             for (ClothingItem item : filteredList) {
-                if (item.getName().toLowerCase().contains(searchText) || 
-                    (item.getDescription() != null && item.getDescription().toLowerCase().contains(searchText))) {
+                if ((item.getName() != null && item.getName().toLowerCase().contains(searchText)) ||
+                        (item.getDescription() != null && item.getDescription().toLowerCase().contains(searchText))) {
                     searchFilteredList.add(item);
                 }
             }
@@ -217,7 +225,7 @@ public class ShoppingFragment extends Fragment {
             }
         });
     }
-    
+
     @Override
     public void onResume() {
         super.onResume();

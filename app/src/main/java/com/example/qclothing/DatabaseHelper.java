@@ -1,7 +1,7 @@
 package com.example.qclothing;
 
 import android.content.Context;
-import android.database.SQLException;  // Changed from java.sql.SQLException
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -14,6 +14,7 @@ import java.io.OutputStream;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = "DatabaseHelper";
     private static String DB_PATH = ""; // Will be updated in constructor
     private static String DB_NAME = "qclothing.db"; // Your database file name
     private SQLiteDatabase mDataBase;
@@ -24,6 +25,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, 1); // Database name, factory (null), version
         this.mContext = context;
         DB_PATH = context.getApplicationInfo().dataDir + "/databases/"; // Path to internal storage databases
+
+        // Create databases directory if it doesn't exist
+        File dbDir = new File(DB_PATH);
+        if (!dbDir.exists()) {
+            dbDir.mkdirs();
+        }
     }
 
     // Method to update or create database if needed
@@ -46,33 +53,110 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Copy database from assets folder to application's database folder
     private void copyDataBase() throws IOException {
-        InputStream mInput = mContext.getAssets().open(DB_NAME);
-        String outFileName = DB_PATH + DB_NAME;
-        OutputStream mOutput = new FileOutputStream(outFileName);
-        byte[] mBuffer = new byte[1024];
-        int mLength;
-        while ((mLength = mInput.read(mBuffer)) > 0) {
-            mOutput.write(mBuffer, 0, mLength);
+        try {
+            InputStream mInput = mContext.getAssets().open(DB_NAME);
+            String outFileName = DB_PATH + DB_NAME;
+            OutputStream mOutput = new FileOutputStream(outFileName);
+            byte[] mBuffer = new byte[1024];
+            int mLength;
+            while ((mLength = mInput.read(mBuffer)) > 0) {
+                mOutput.write(mBuffer, 0, mLength);
+            }
+            mOutput.flush();
+            mOutput.close();
+            mInput.close();
+            Log.d(TAG, "Database copied successfully from assets");
+        } catch (IOException e) {
+            Log.e(TAG, "Error copying database from assets", e);
+
+            // If there's no database in assets, create an empty one
+            this.getReadableDatabase();
+            Log.d(TAG, "Created empty database instead");
+            throw e; // Re-throw to inform caller about the issue
         }
-        mOutput.flush();
-        mOutput.close();
-        mInput.close();
     }
 
     // Prepare database for use (create or update if needed)
     public void prepareDataBase() throws IOException {
         boolean dbExist = checkDataBase();
         if (dbExist) {
-            int dbVersion = getVersionId(); // Optional: Check database version if needed
+            Log.d(TAG, "Database exists, checking version");
+            int dbVersion = getVersionId(); // Check database version if needed
             int appDbVersion = 1; // Your app's database version
-            if (appDbVersion > dbVersion) { // Optional: Compare versions and update if app version is newer
+            if (appDbVersion > dbVersion) { // Compare versions and update if app version is newer
+                Log.d(TAG, "Database needs update, current version: " + dbVersion);
                 mNeedUpdate = true;
                 updateDataBase();
             }
         } else {
-            // Database doesn't exist, copy it from assets
+            Log.d(TAG, "Database doesn't exist, creating new one");
+            // Database doesn't exist, create it
             this.getReadableDatabase(); // Create empty database in system folder
-            copyDataBase();
+            close();
+            try {
+                copyDataBase(); // Try to copy from assets
+            } catch (IOException e) {
+                Log.e(TAG, "Error copying database, will create tables manually", e);
+                // If copying fails, create tables manually
+                createTables();
+            }
+        }
+    }
+
+    // Create database tables manually if needed
+    private void createTables() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            // Create users table
+            db.execSQL("CREATE TABLE IF NOT EXISTS users (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "name TEXT NOT NULL," +
+                    "email TEXT," +
+                    "phone TEXT," +
+                    "password TEXT NOT NULL," +
+                    "is_admin INTEGER DEFAULT 0)");
+
+            // Create clothing table
+            db.execSQL("CREATE TABLE IF NOT EXISTS quanao (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "itemId TEXT UNIQUE NOT NULL," +
+                    "name TEXT NOT NULL," +
+                    "description TEXT," +
+                    "price REAL NOT NULL," +
+                    "imageUrl TEXT," +
+                    "category TEXT)");
+
+            // Create cart table
+            db.execSQL("CREATE TABLE IF NOT EXISTS cart (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "user_id INTEGER NOT NULL," +
+                    "item_id TEXT NOT NULL," +
+                    "quantity INTEGER DEFAULT 1," +
+                    "FOREIGN KEY (user_id) REFERENCES users(id)," +
+                    "FOREIGN KEY (item_id) REFERENCES quanao(itemId))");
+
+            // Create orders table
+            db.execSQL("CREATE TABLE IF NOT EXISTS orders (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "user_id INTEGER NOT NULL," +
+                    "order_date INTEGER NOT NULL," +
+                    "total REAL NOT NULL," +
+                    "status TEXT DEFAULT 'pending'," +
+                    "FOREIGN KEY (user_id) REFERENCES users(id))");
+
+            // Create order_items table
+            db.execSQL("CREATE TABLE IF NOT EXISTS order_items (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "order_id INTEGER NOT NULL," +
+                    "item_id TEXT NOT NULL," +
+                    "quantity INTEGER DEFAULT 1," +
+                    "price REAL NOT NULL," +
+                    "FOREIGN KEY (order_id) REFERENCES orders(id)," +
+                    "FOREIGN KEY (item_id) REFERENCES quanao(itemId))");
+
+            Log.d(TAG, "Tables created successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating tables", e);
         }
     }
 
@@ -97,7 +181,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // No need to create database here, we are copying an existing one
+        // Tables are created in createTables() method if needed
     }
 
     @Override
@@ -112,11 +196,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    // Optional: Method to get database version (if you have version info in your database)
+    // Method to get database version (if you have version info in your database)
     private int getVersionId() {
-        SQLiteDatabase db = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
-        int version = db.getVersion();
-        db.close();
-        return version;
+        try {
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
+            int version = db.getVersion();
+            db.close();
+            return version;
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting database version", e);
+            return 0;
+        }
     }
 }

@@ -5,26 +5,34 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.database.SQLException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     // Declare and initialize clothingItemList as public static
     public static List<ClothingItem> clothingItemList = new ArrayList<>();
+
+    private DatabaseHelper databaseHelper;
+    private DatabaseManager databaseManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DatabaseHelper databaseHelper = new DatabaseHelper(this.getBaseContext());
-
+        // Initialize database
+        initializeDatabase();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -37,9 +45,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initializeDatabase() {
+        try {
+            // Initialize DatabaseHelper
+            databaseHelper = new DatabaseHelper(this);
+
+            // Prepare database (create or copy from assets if needed)
+            databaseHelper.prepareDataBase();
+
+            // Initialize DatabaseManager
+            databaseManager = new DatabaseManager(this);
+
+            // Open database connection
+            databaseManager.open();
+
+            // Initialize database with sample data if empty
+            databaseManager.initDatabase();
+
+            // Load clothing items to static list for backward compatibility
+            clothingItemList = databaseManager.getAllClothingItems();
+
+            Log.d(TAG, "Database initialized successfully. Loaded " + clothingItemList.size() + " items.");
+        } catch (SQLException | IOException e) {
+            Log.e(TAG, "Error initializing database", e);
+            Toast.makeText(this, "Error initializing database: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        } finally {
+            // Close database connection
+            if (databaseManager != null && databaseManager.isOpen()) {
+                databaseManager.close();
+            }
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu); // You'll need to create main_menu.xml in res/menu
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 

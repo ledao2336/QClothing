@@ -583,7 +583,10 @@ public class DatabaseManager {
     }
 
     // Initialize database with sample data from CSV
+    // Initialize database with sample data
     public void initDatabase() {
+        Log.d(TAG, "Initializing database with sample data...");
+
         try {
             // Check if tables are empty
             Cursor userCursor = database.rawQuery("SELECT COUNT(*) FROM " + TABLE_USERS, null);
@@ -591,10 +594,13 @@ public class DatabaseManager {
             int userCount = userCursor.getInt(0);
             userCursor.close();
 
+            Log.d(TAG, "Current user count: " + userCount);
+
             if (userCount == 0) {
+                Log.d(TAG, "Adding sample users");
                 // Add admin and demo user
-                addUser("Admin", "admin@example.com", "admin", "adminpass", true);
-                addUser("Demo User", "user@example.com", "user", "password", false);
+                addUser("Admin", "admin@example.com", "", "adminpass", true);
+                addUser("Demo User", "user@example.com", "", "password", false);
             }
 
             Cursor itemCursor = database.rawQuery("SELECT COUNT(*) FROM " + TABLE_CLOTHING, null);
@@ -602,17 +608,19 @@ public class DatabaseManager {
             int itemCount = itemCursor.getInt(0);
             itemCursor.close();
 
+            Log.d(TAG, "Current clothing item count: " + itemCount);
+
             if (itemCount == 0) {
-                // Add clothing items from CSV data
-                Context ctx = context;
+                Log.d(TAG, "Adding sample clothing items");
+                // Add sample clothing items
 
                 // T-shirt 1
                 addClothingItem(new ClothingItem(
                         "T-shirt 1",
                         "Cool T-shirt",
-                        25.00,
+                        250.000,
                         "https://bizweb.dktcdn.net/thumb/1024x1024/100/331/067/products/398434736-197314980077983-4483347381331007718-n.jpg?v=1701671138780",
-                        ctx.getString(R.string.category_tops),
+                        "Áo",
                         "TSHIRT1"
                 ));
 
@@ -620,9 +628,9 @@ public class DatabaseManager {
                 addClothingItem(new ClothingItem(
                         "Jeans 1",
                         "Stylish Jeans",
-                        50.00,
+                        500.000,
                         "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1722862431-paige-jeans-66b0cb521552a.jpg?crop=0.8886666666666666xw:1xh;center,top&resize=980:*",
-                        ctx.getString(R.string.category_bottoms),
+                        "Quần",
                         "JEANS1"
                 ));
 
@@ -630,9 +638,9 @@ public class DatabaseManager {
                 addClothingItem(new ClothingItem(
                         "Jacket 1",
                         "Warm Jacket",
-                        75.00,
+                        750.000,
                         "https://m.media-amazon.com/images/I/51JQOeN1W1L._AC_UY1000_.jpg",
-                        ctx.getString(R.string.category_outerwear),
+                        "Áo khoác",
                         "JACKET1"
                 ));
 
@@ -640,9 +648,9 @@ public class DatabaseManager {
                 addClothingItem(new ClothingItem(
                         "JEANS 2",
                         "Stylish Jeans",
-                        100.00,
+                        1000.000,
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRh4P0zH18OcuFHx4DQMQ4wW0JLypcyC7DusA&s",
-                        ctx.getString(R.string.category_bottoms),
+                        "Quần",
                         "JEANS2"
                 ));
 
@@ -650,21 +658,16 @@ public class DatabaseManager {
                 addClothingItem(new ClothingItem(
                         "Leather Gloves",
                         "Fine leather gloves",
-                        25.00,
+                        250.000,
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMiHnK_-lh5JDJqpGtcwRjmWfH7xaWnxO4-A&s",
-                        ctx.getString(R.string.category_accessories),
+                        "Phụ kiện",
                         "GLOVES1"
                 ));
 
-                // Add a few more items for variety
-                addClothingItem(new ClothingItem("Craft Top", "Hand-crafted designer top", 65.00, "https://example.com/craft_top.jpg", ctx.getString(R.string.category_tops), "CRAFT_TOP1"));
-                addClothingItem(new ClothingItem("Tailored Trouser", "Classic tailored trousers", 70.00, "https://example.com/trouser1.jpg", ctx.getString(R.string.category_bottoms), "TROUSER1"));
-                addClothingItem(new ClothingItem("Khaki Pants", "Durable khaki pants", 45.00, "https://example.com/khaki1.jpg", ctx.getString(R.string.category_bottoms), "KHAKI_PANTS1"));
-                addClothingItem(new ClothingItem("Mini Skirt", "Trendy mini skirt", 30.00, "https://example.com/miniskirt1.jpg", ctx.getString(R.string.category_bottoms), "MINI_SKIRT1"));
-                addClothingItem(new ClothingItem("Fedora Hat", "Stylish fedora hat", 40.00, "https://example.com/fedora1.jpg", ctx.getString(R.string.category_accessories), "FEDORA_HAT1"));
+                Log.d(TAG, "Sample data initialization complete");
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error initializing database", e);
+            Log.e(TAG, "Error initializing database with sample data", e);
         }
     }
 }

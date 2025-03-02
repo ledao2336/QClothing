@@ -44,7 +44,10 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     // Add Firebase Firestore dependencies here
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0")) // Firebase BOM - QUAN TRỌNG GIỮ LẠI
-    implementation("com.google.firebase:firebase-firestore-ktx")         // THAY THẾ analytics BẰNG firestore-ktx (hoặc firebase-firestore nếu dùng Java)
-    // XÓA dòng này (nếu bạn không cần Firebase Analytics): implementation("com.google.firebase:firebase-analytics")
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+    // Add Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 }

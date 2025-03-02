@@ -12,6 +12,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -28,6 +32,11 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
         this.cartItemList = cartItemList;
         this.databaseManager = new DatabaseManager(context);
         this.sessionManager = new SessionManager(context);
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+        notifyDataSetChanged();
     }
 
     public void updateCartItems(List<CartItem> newItems) {
@@ -50,44 +59,65 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
         holder.itemPriceTextView.setText(String.format(Locale.getDefault(), "%.3f VND", cartItem.getClothingItem().getPrice()));
         holder.quantityTextView.setText(String.valueOf(cartItem.getQuantity()));
 
-        // Load image (we'll use a placeholder for now)
-        // In a real app, you would use Glide or Picasso to load images
-        holder.itemImageView.setImageResource(R.drawable.ic_launcher_foreground);
+        // Load image with Glide
+        if (cartItem.getClothingItem().getImageUrl() != null && !cartItem.getClothingItem().getImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(cartItem.getClothingItem().getImageUrl())
+                    .apply(new RequestOptions()
+                            .placeholder(R.drawable.ic_launcher_foreground)
+                            .error(R.drawable.ic_launcher_foreground)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .into(holder.itemImageView);
+        } else {
+            // If no image URL, use placeholder
+            holder.itemImageView.setImageResource(R.drawable.ic_launcher_foreground);
+        }
 
-        holder.increaseQuantityButton.setOnClickListener(v -> {
-            int newQuantity = cartItem.getQuantity() + 1;
-            updateCartItemQuantity(cartItem, newQuantity);
-            holder.quantityTextView.setText(String.valueOf(newQuantity));
-            if (context instanceof CartActivity) {
-                ((CartActivity) context).onCartUpdated(); // Update total price in CartActivity
-            }
-        });
+        // Handle readOnly mode
+        if (readOnly) {
+            holder.increaseQuantityButton.setVisibility(View.GONE);
+            holder.decreaseQuantityButton.setVisibility(View.GONE);
+            holder.removeItemButton.setVisibility(View.GONE);
+        } else {
+            holder.increaseQuantityButton.setVisibility(View.VISIBLE);
+            holder.decreaseQuantityButton.setVisibility(View.VISIBLE);
+            holder.removeItemButton.setVisibility(View.VISIBLE);
 
-        holder.decreaseQuantityButton.setOnClickListener(v -> {
-            if (cartItem.getQuantity() > 1) {
-                int newQuantity = cartItem.getQuantity() - 1;
+            holder.increaseQuantityButton.setOnClickListener(v -> {
+                int newQuantity = cartItem.getQuantity() + 1;
                 updateCartItemQuantity(cartItem, newQuantity);
                 holder.quantityTextView.setText(String.valueOf(newQuantity));
                 if (context instanceof CartActivity) {
                     ((CartActivity) context).onCartUpdated(); // Update total price in CartActivity
                 }
-            } else {
-                Toast.makeText(context, "Số lượng không được bé hơn 1", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
 
-        holder.removeItemButton.setOnClickListener(v -> {
-            int adapterPosition = holder.getAdapterPosition();
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                CartItem itemToRemove = cartItemList.get(adapterPosition);
-                removeCartItem(itemToRemove);
-                cartItemList.remove(adapterPosition);
-                notifyItemRemoved(adapterPosition);
-                if (context instanceof CartActivity) {
-                    ((CartActivity) context).onCartUpdated(); // Update total price in CartActivity
+            holder.decreaseQuantityButton.setOnClickListener(v -> {
+                if (cartItem.getQuantity() > 1) {
+                    int newQuantity = cartItem.getQuantity() - 1;
+                    updateCartItemQuantity(cartItem, newQuantity);
+                    holder.quantityTextView.setText(String.valueOf(newQuantity));
+                    if (context instanceof CartActivity) {
+                        ((CartActivity) context).onCartUpdated(); // Update total price in CartActivity
+                    }
+                } else {
+                    Toast.makeText(context, "Số lượng không được bé hơn 1", Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
+            });
+
+            holder.removeItemButton.setOnClickListener(v -> {
+                int adapterPosition = holder.getAdapterPosition();
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    CartItem itemToRemove = cartItemList.get(adapterPosition);
+                    removeCartItem(itemToRemove);
+                    cartItemList.remove(adapterPosition);
+                    notifyItemRemoved(adapterPosition);
+                    if (context instanceof CartActivity) {
+                        ((CartActivity) context).onCartUpdated(); // Update total price in CartActivity
+                    }
+                }
+            });
+        }
     }
 
     @Override
