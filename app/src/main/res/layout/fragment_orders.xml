@@ -13,6 +13,16 @@
         android:gravity="center"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Add this TextView for order summary -->
+    <TextView
+        android:id="@+id/order_summary_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F1F1F1"
+        android:padding="12dp"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/orders_recycler_view"
         android:layout_width="match_parent"

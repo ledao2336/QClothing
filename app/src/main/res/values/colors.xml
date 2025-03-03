@@ -4,9 +4,12 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- Add these color definitions for the splash screen -->
-    <color name="splash_background">#FFFFFF</color> <!-- Example: White background -->
-    <color name="splash_text_color">#333333</color>   <!-- Example: Dark gray text (adjust as desired) -->
+    <color name="splash_background">#FFFFFF</color>
+    <color name="splash_text_color">#333333</color>
 
     <!-- You can add more colors here if needed for your app's theme -->
+
+    <!-- Add this color definition for the purple button -->
+    <color name="purple_button">#9C27B0</color> <!-- Example: Deep Purple 500 - You can change this color code -->
 
 </resources>

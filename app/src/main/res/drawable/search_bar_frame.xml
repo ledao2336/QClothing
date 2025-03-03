@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle"> <!-- Define shape as rectangle -->
+
+    <solid android:color="@android:color/transparent" /> <!-- Make the inner background transparent -->
+
+    <stroke
+        android:width="2dp"
+    android:color="@color/purple_button" /> <!-- Border color (purple - using your purple_button color resource) -->
+
+    <corners android:radius="8dp" />      <!-- Rounded corners (adjust radius as needed) -->
+
+</shape>

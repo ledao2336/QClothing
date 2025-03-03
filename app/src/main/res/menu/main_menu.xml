@@ -9,7 +9,8 @@
     <item
         android:id="@+id/action_login_signup"
         android:title="@string/login_signup"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:theme="@style/MenuItemTextColorPurple" />
     <item
         android:id="@+id/action_logout"
         android:icon="@drawable/ic_logout"

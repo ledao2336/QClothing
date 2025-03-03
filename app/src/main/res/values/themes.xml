@@ -12,4 +12,9 @@
         <item name="android:windowBackground">@drawable/ic_launcher_foreground_foreground</item>
         <item name="android:statusBarColor">@color/splash_background</item>
     </style>
+
+    <!-- MenuItem Text Color Style -->
+    <style name="MenuItemTextColorPurple" parent="">
+        <item name="android:textColor">@color/purple_button</item>
+    </style>
 </resources>

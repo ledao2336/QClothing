@@ -65,8 +65,8 @@ public class CheckoutActivity extends AppCompatActivity {
 
         checkoutRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         checkoutItemAdapter = new CartItemAdapter(this, cartItems);
-        // Disable editing in checkout screen
-        //checkoutItemAdapter.setReadOnly(true);
+        // Set read-only mode for checkout screen
+        checkoutItemAdapter.setReadOnly(true);
         checkoutRecyclerView.setAdapter(checkoutItemAdapter);
 
         updateTotalPrice();
@@ -89,6 +89,11 @@ public class CheckoutActivity extends AppCompatActivity {
 
             // Get cart items for the current user
             cartItems = databaseManager.getCartItems(currentUser.getId());
+
+            if (cartItems.isEmpty()) {
+                // If database returned empty, try to use static cart as fallback
+                cartItems = new ArrayList<>(CartActivity.cartItems);
+            }
 
         } catch (Exception e) {
             Toast.makeText(this, "Không thể tải giỏ hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -117,6 +122,9 @@ public class CheckoutActivity extends AppCompatActivity {
             // Open database connection
             databaseManager.open();
 
+            // First, make a copy of the items to preserve them
+            List<CartItem> orderItems = new ArrayList<>(cartItems);
+
             // Create order
             long orderId = databaseManager.createOrder(currentUser.getId(), totalAmount);
 
@@ -124,7 +132,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 // Order created successfully
                 Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
 
-                // Clear static cart
+                // Clear static cart after the order is processed
                 CartActivity.cartItems.clear();
 
                 // Show order confirmation
