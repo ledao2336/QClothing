@@ -92,6 +92,10 @@
     <string name="customer_name">Tên khách hàng</string>
     <string name="order_items">Sản phẩm trong đơn hàng</string>
 
+    <string name="payment_successful">Thanh toán thành công</string>
+    <string name="order_id_format">Đơn hàng #%d</string>
+    <string name="order_id_placeholder">Đơn hàng</string>
+    <string name="return_to_shopping">Tiếp tục mua sắm</string>
 
     <string name="app_logo">QClothing</string>
 </resources>

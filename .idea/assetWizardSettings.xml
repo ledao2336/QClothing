@@ -93,7 +93,8 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="C:\Users\LENOVO\Downloads\clothes.svg" />
+                                                <entry key="imagePath" value="C:\Users\LENOVO\Downloads\AA.png" />
+                                                <entry key="scalingPercent" value="116" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -106,6 +107,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -117,6 +119,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -128,7 +131,6 @@
                                     <map>
                                       <entry key="backgroundColor" value="3ddc85" />
                                       <entry key="legacyIconShape" value="CIRCLE" />
-                                      <entry key="outputName" value="ic_launcher_foreground" />
                                       <entry key="showSafeZone" value="false" />
                                     </map>
                                   </option>
