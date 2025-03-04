@@ -25,7 +25,7 @@
 
     <!-- Shopping Fragment Strings -->
     <string name="select_category">Select Category</string>
-    <string name="search_hint">Quần áo cần tìm</string>
+    <string name="search_hint">Quần áo cần tìm </string>
     <string name="sort_by">Sort By</string>
 
     <!-- Item Description Activity Strings -->
@@ -97,5 +97,6 @@
     <string name="order_id_placeholder">Đơn hàng</string>
     <string name="return_to_shopping">Tiếp tục mua sắm</string>
 
+    <string name="store_info">Xem thông tin cửa hàng</string>
     <string name="app_logo">QClothing</string>
 </resources>

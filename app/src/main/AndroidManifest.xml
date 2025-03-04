@@ -43,6 +43,11 @@
         <activity
             android:name=".OrderConfirmationActivity"
             android:exported="false" />
+        <activity
+            android:name="StoreInfoActivity"
+            android:exported="false" />
+
+
 </application>
 
     </manifest>

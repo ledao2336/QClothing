@@ -11,6 +11,13 @@
         android:title="@string/login_signup"
         app:showAsAction="never"
         android:theme="@style/MenuItemTextColorPurple" />
+
+    <!-- Thêm Mục Menu "Xem thông tin cửa hàng" -->
+    <item
+        android:id="@+id/action_store_info"
+    android:title="@string/store_info"
+    app:showAsAction="never" />
+
     <item
         android:id="@+id/action_logout"
         android:icon="@drawable/ic_logout"
