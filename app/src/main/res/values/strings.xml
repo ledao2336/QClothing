@@ -30,7 +30,7 @@
 
     <!-- Item Description Activity Strings -->
     <!-- (No specific strings in layout beyond general ones) -->
-
+    <string name="tai_khoan">Tài khoản</string>
     <!-- Admin Portal Strings -->
     <string name="item_name">Tên sản pẩm</string>
     <string name="item_description">Mô tả</string>

@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private boolean mNeedUpdate = false;
 
     // New flag to control database initialization
-    private static final int FORCE_REINITIALIZE = 1; // Use 1 to force reinitialize, 0 to use assets
+    private static final int FORCE_REINITIALIZE = 0; // Use 1 to force reinitialize, 0 to use assets
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, 1); // Database name, factory (null), version

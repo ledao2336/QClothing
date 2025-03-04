@@ -71,13 +71,19 @@ public class DatabaseManager {
     }
     
     // Open database connection
+    // In DatabaseManager.java
     public void open() throws SQLException, IOException {
-        database = dbHelper.openDataBase();
+        // Only open if not already open
+        if (database == null || !database.isOpen()) {
+            database = dbHelper.openDataBase();
+        }
     }
-    
-    // Close database connection
+
     public void close() {
-        dbHelper.close();
+        // Only close if open
+        if (database != null && database.isOpen()) {
+            database.close();
+        }
     }
     
     // Check if database is open

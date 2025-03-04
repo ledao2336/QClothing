@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeDatabase() {
+        DatabaseManager dbManager = null;
         try {
             // Initialize DatabaseHelper
             databaseHelper = new DatabaseHelper(this);
@@ -58,19 +59,19 @@ public class MainActivity extends AppCompatActivity {
             databaseHelper.prepareDataBase();
 
             // Initialize DatabaseManager
-            databaseManager = new DatabaseManager(this);
+            dbManager = new DatabaseManager(this);
 
             // Open database connection
-            databaseManager.open();
+            dbManager.open();
 
             // Initialize database with sample data if empty
-            databaseManager.initDatabase();
+            dbManager.initDatabase();
 
             // Ensure default users exist (admin and demo)
-            databaseManager.ensureDefaultUsersExist();
+            dbManager.ensureDefaultUsersExist();
 
             // Load clothing items to static list for backward compatibility
-            clothingItemList = databaseManager.getAllClothingItems();
+            clothingItemList = dbManager.getAllClothingItems();
 
             Log.d(TAG, "Database initialized successfully. Loaded " + clothingItemList.size() + " items.");
         } catch (SQLException | IOException e) {
@@ -78,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error initializing database: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         } finally {
             // Close database connection
-            if (databaseManager != null && databaseManager.isOpen()) {
-                databaseManager.close();
+            if (dbManager != null) {
+                dbManager.close();
             }
         }
     }

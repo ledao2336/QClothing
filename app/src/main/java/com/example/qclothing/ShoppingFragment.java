@@ -95,16 +95,18 @@ public class ShoppingFragment extends Fragment {
     }
 
     private void fetchClothingItemsFromDatabase() {
+        DatabaseManager dbManager = null;
         try {
-            // Open database connection
-            databaseManager.open();
+            // Create a new instance for this operation
+            dbManager = new DatabaseManager(getContext());
+            dbManager.open();
 
             // Clear current lists
             clothingItemList.clear();
             originalClothingItemList.clear();
 
             // Get all clothing items from database
-            List<ClothingItem> items = databaseManager.getAllClothingItems();
+            List<ClothingItem> items = dbManager.getAllClothingItems();
 
             if (items != null && !items.isEmpty()) {
                 Log.d(TAG, "Loaded " + items.size() + " items from database");
@@ -137,8 +139,8 @@ public class ShoppingFragment extends Fragment {
             applyFiltersAndSorting();
         } finally {
             // Close database connection
-            if (databaseManager != null && databaseManager.isOpen()) {
-                databaseManager.close();
+            if (dbManager != null) {
+                dbManager.close();
             }
         }
     }
