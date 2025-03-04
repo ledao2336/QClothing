@@ -173,6 +173,11 @@ public class MainActivity extends AppCompatActivity {
             // Refresh the menu
             invalidateOptionsMenu();
             return true;
+        } else if (id == R.id.action_store_info) {
+            // Navigate to Store Info Activity
+            Intent storeInfoIntent = new Intent(this, StoreInfoActivity.class);
+            startActivity(storeInfoIntent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
