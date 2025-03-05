@@ -161,22 +161,80 @@ public class DatabaseManager {
 
 
 
+    // Add a new user
+    // Fix in DatabaseManager.java - addUser method
     public long addUser(String name, String email, String phone, String password, boolean isAdmin) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_USER_NAME, name);
-        values.put(COLUMN_USER_EMAIL, email);
-        values.put(COLUMN_USER_PHONE, phone);
-        values.put(COLUMN_USER_PASSWORD, password); // In a real app, hash this password
-        values.put(COLUMN_USER_IS_ADMIN, isAdmin ? 1 : 0);
-        
-        return database.insert(TABLE_USERS, null, values);
+        try {
+            // Log the parameters for debugging
+            Log.d(TAG, "Adding user: name=" + name +
+                    ", email=" + (email != null ? email : "null") +
+                    ", phone=" + (phone != null ? phone : "null"));
+
+            // Create ContentValues object for insertion
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_USER_NAME, name);
+
+            // Handle email and phone properly
+            if (email != null && !email.isEmpty()) {
+                values.put(COLUMN_USER_EMAIL, email);
+            } else {
+                values.putNull(COLUMN_USER_EMAIL);
+            }
+
+            if (phone != null && !phone.isEmpty()) {
+                values.put(COLUMN_USER_PHONE, phone);
+            } else {
+                values.putNull(COLUMN_USER_PHONE);
+            }
+
+            values.put(COLUMN_USER_PASSWORD, password);
+            values.put(COLUMN_USER_IS_ADMIN, isAdmin ? 1 : 0);
+
+            // Insert into database and return the row ID
+            long result = database.insert(TABLE_USERS, null, values);
+
+            // Log the result for debugging
+            Log.d(TAG, "User insertion result: " + result);
+
+            if (result == -1) {
+                // Log the error
+                Log.e(TAG, "Failed to insert user: " + name);
+
+                // Debug the database tables
+                debugDatabaseTables();
+            }
+
+            return result;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception adding user: " + e.getMessage(), e);
+            return -1;
+        }
+    }
+
+    // Add this debugging method to DatabaseManager.java
+    private void debugDatabaseTables() {
+        try {
+            // Debug table structure
+            Cursor cursor = database.rawQuery("PRAGMA table_info(" + TABLE_USERS + ")", null);
+            Log.d(TAG, "User table structure:");
+            while (cursor.moveToNext()) {
+                Log.d(TAG, cursor.getString(1) + " - " + cursor.getString(2) +
+                        (cursor.getInt(3) == 1 ? " (NOT NULL)" : ""));
+            }
+            cursor.close();
+
+            // Debug current users
+            debugListAllUsers();
+        } catch (Exception e) {
+            Log.e(TAG, "Error debugging tables: " + e.getMessage());
+        }
     }
     
     // Check if user credentials are valid
     public User authenticateUser(String emailOrPhone, String password) {
-        String query = "SELECT * FROM " + TABLE_USERS + 
-                       " WHERE (" + COLUMN_USER_EMAIL + " = ? OR " + 
-                       COLUMN_USER_PHONE + " = ?) AND " + 
+        String query = "SELECT * FROM " + TABLE_USERS +
+                       " WHERE (" + COLUMN_USER_EMAIL + " = ? OR " +
+                       COLUMN_USER_PHONE + " = ?) AND " +
                        COLUMN_USER_PASSWORD + " = ?";
         
         Cursor cursor = database.rawQuery(query, new String[] {emailOrPhone, emailOrPhone, password});

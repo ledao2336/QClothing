@@ -10,6 +10,7 @@ import android.content.Intent; // Import Intent
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.qclothing.LoginActivity;
 import com.example.qclothing.R;
@@ -43,13 +44,19 @@ public class AdminActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     Fragment selectedFragment = null;
                     int itemId = item.getItemId();
+
                     if (itemId == R.id.admin_add_item) {
                         selectedFragment = new AddItemFragment();
                     } else if (itemId == R.id.admin_edit_item) {
                         selectedFragment = new EditItemFragment();
                     } else if (itemId == R.id.admin_remove_item) {
                         selectedFragment = new RemoveItemFragment();
+                    } else if (itemId == R.id.admin_customer_lookup) {
+                        selectedFragment = new CustomerLookupFragment();
+                    } else if (itemId == R.id.admin_orders) {
+                        selectedFragment = new OrdersFragment();
                     }
+
                     if (selectedFragment != null) {
                         loadFragment(selectedFragment);
                         return true;
@@ -74,12 +81,18 @@ public class AdminActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.admin_logout) {
-            // For now, just go back to LoginActivity (in real app, clear login state)
-            // finish(); // Old code - just finish AdminActivity
+            // Create a proper SessionManager instance
+            SessionManager sessionManager = new SessionManager(this);
+            // Call logout method
+            sessionManager.logoutUser();
 
-            // --- Updated Logout Logic - Navigate back to LoginActivity ---
-            Intent loginIntent = new Intent(AdminActivity.this, LoginActivity.class); // Create Intent to LoginActivity
-            startActivity(loginIntent); // Start LoginActivity
+            // Show feedback to the user
+            Toast.makeText(AdminActivity.this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+
+            // Navigate back to LoginActivity
+            Intent loginIntent = new Intent(AdminActivity.this, LoginActivity.class);
+            loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(loginIntent);
             finish(); // Close AdminActivity
             return true;
         }
