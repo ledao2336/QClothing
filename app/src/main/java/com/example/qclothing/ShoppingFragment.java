@@ -231,7 +231,7 @@ public class ShoppingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Refresh data when returning to fragment
+        // Reload data from database
         fetchClothingItemsFromDatabase();
     }
 }

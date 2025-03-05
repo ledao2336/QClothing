@@ -58,8 +58,27 @@ public class AddItemFragment extends Fragment {
                 double price = Double.parseDouble(priceStr);
                 // Create new ClothingItem and add to mock data (replace with real data source)
                 ClothingItem newItem = new ClothingItem(name, description, price, imageUrl, category, generateItemId(name));
-                MainActivity.clothingItemList.add(newItem); // Access static clothingItemList from MainActivity
-                Toast.makeText(getContext(), "Thêm sản phẩm: " + name, Toast.LENGTH_SHORT).show();
+
+                // Add to the static list
+                MainActivity.clothingItemList.add(newItem);
+
+                // IMPORTANT: Add to database
+                DatabaseManager dbManager = new DatabaseManager(getContext());
+                try {
+                    dbManager.open();
+                    long result = dbManager.addClothingItem(newItem);
+                    if (result > 0) {
+                        Toast.makeText(getContext(), "Thêm sản phẩm: " + name, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Không thể thêm sản phẩm vào cơ sở dữ liệu", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                } finally {
+                    if (dbManager != null && dbManager.isOpen()) {
+                        dbManager.close();
+                    }
+                }
 
                 // Clear input fields after adding
                 nameEditText.setText("");

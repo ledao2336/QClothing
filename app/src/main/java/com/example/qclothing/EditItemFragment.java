@@ -81,6 +81,7 @@ public class EditItemFragment extends Fragment {
                 Toast.makeText(getContext(), "Không có sản phầm nào được chọn", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             String name = nameEditText.getText().toString();
             String description = descriptionEditText.getText().toString();
             String priceStr = priceEditText.getText().toString();
@@ -95,6 +96,7 @@ public class EditItemFragment extends Fragment {
 
             try {
                 double price = Double.parseDouble(priceStr);
+
                 // Update selected ClothingItem's properties
                 selectedItemForEdit.setName(name);
                 selectedItemForEdit.setDescription(description);
@@ -102,7 +104,25 @@ public class EditItemFragment extends Fragment {
                 selectedItemForEdit.setImageUrl(imageUrl);
                 selectedItemForEdit.setCategory(category);
 
-                Toast.makeText(getContext(), "Đã cập nhật thay đổi cho: " + name, Toast.LENGTH_SHORT).show();
+                // Create a DatabaseManager to update the database
+                DatabaseManager dbManager = new DatabaseManager(getContext());
+                try {
+                    dbManager.open();
+                    // Update the item in the database
+                    int result = dbManager.updateClothingItem(selectedItemForEdit);
+                    if (result > 0) {
+                        Toast.makeText(getContext(), "Đã cập nhật thay đổi cho: " + name, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Không thể cập nhật trong cơ sở dữ liệu", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                } finally {
+                    if (dbManager != null && dbManager.isOpen()) {
+                        dbManager.close();
+                    }
+                }
 
                 // Optionally refresh the item selection spinner
                 populateItemSelectionSpinner(); // To reflect name changes in the spinner
@@ -162,6 +182,6 @@ public class EditItemFragment extends Fragment {
                 }
             }
         }
-        return -1; // Category not found in spinner
+        return -1;
     }
 }

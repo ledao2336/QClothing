@@ -62,12 +62,45 @@ public class RemoveItemFragment extends Fragment {
     }
 
     private void removeItemByName(String itemName) {
-        Iterator<ClothingItem> iterator = clothingItemList.iterator();
-        while (iterator.hasNext()) {
-            ClothingItem item = iterator.next();
+        ClothingItem itemToRemove = null;
+
+        // Find the item to remove
+        for (ClothingItem item : clothingItemList) {
             if (item.getName().equals(itemName)) {
-                iterator.remove(); // Safely remove using iterator
-                break; // Assuming item names are unique, exit after first match
+                itemToRemove = item;
+                break;
+            }
+        }
+
+        if (itemToRemove != null) {
+            // Create a DatabaseManager to update the database
+            DatabaseManager dbManager = new DatabaseManager(getContext());
+            try {
+                dbManager.open();
+
+                // Delete the item from the database
+                int result = dbManager.deleteClothingItem(itemToRemove.getItemId());
+
+                if (result > 0) {
+                    // If database deletion succeeded, remove from in-memory list
+                    Iterator<ClothingItem> iterator = clothingItemList.iterator();
+                    while (iterator.hasNext()) {
+                        ClothingItem item = iterator.next();
+                        if (item.getName().equals(itemName)) {
+                            iterator.remove(); // Safely remove using iterator
+                            break;
+                        }
+                    }
+                    Toast.makeText(getContext(), "Đã xóa: " + itemName, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Không thể xóa sản phẩm trong cơ sở dữ liệu", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            } finally {
+                if (dbManager != null && dbManager.isOpen()) {
+                    dbManager.close();
+                }
             }
         }
     }

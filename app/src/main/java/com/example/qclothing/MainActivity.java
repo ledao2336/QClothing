@@ -70,8 +70,9 @@ public class MainActivity extends AppCompatActivity {
             // Ensure default users exist (admin and demo)
             dbManager.ensureDefaultUsersExist();
 
-            // Load clothing items to static list for backward compatibility
-            clothingItemList = dbManager.getAllClothingItems();
+            // IMPORTANT: Load clothing items from database (not just static list)
+            clothingItemList.clear(); // Clear existing items
+            clothingItemList.addAll(dbManager.getAllClothingItems()); // Load from database
 
             Log.d(TAG, "Database initialized successfully. Loaded " + clothingItemList.size() + " items.");
         } catch (SQLException | IOException e) {
